@@ -82,9 +82,9 @@ def send_get_request_with_cookies(url_odata, namefile):
 
 # send_get_request_with_cookies()
 
-list_of_urls = [config('URLACCOUNT'), config('URLCONTACT'), config('URLUSRLEADS')]
-modified_strings = [s.replace("/0/odata/", "") for s in list_of_urls]
-
+list_of_urls = [config('URLACCOUNT'), config('URLCONTACT'), config('URLEMPLOYEE'), config('URLUSRSCROLLLIST'), config('URLUSRTYPEPARTNER')]
+# modified_strings = [s.replace("/0/odata/", "") for s in list_of_urls]
+modified_strings = ['ACCOUNT', 'CONTACT', 'EMPLOYEE', 'USRSCROLLLIST', 'USRTYPEPARTNER']
 
 # THIS CODE WAS FIRST TRY TO RECORD INTO JSON FILE DIFFERENT INFO FROM CREATIO
 
