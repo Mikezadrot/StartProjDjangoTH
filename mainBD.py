@@ -3,6 +3,25 @@ import requests
 import json
 import urllib3
 import psycopg2
+import time
+import logging
+from parametrs import fields_and_types_Contacts, fields_and_types_Account, fields_and_types_Employee, fields_and_types_usr_type_partner, fields_and_types_usr_scroll_list_info
+from parametrs import name_t, name_url
+
+
+logging.basicConfig(
+    filename='log.txt',  # Файл для запису логів
+    level=logging.DEBUG,  # Рівень логування (може бути DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format='%(asctime)s [%(levelname)s]: %(message)s',  # Формат запису логів
+    datefmt='%Y-%m-%d %H:%M:%S'  # Формат дати та часу
+)
+
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)  # Рівень логування для консолі (може бути INFO, WARNING, ERROR, CRITICAL)
+console_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s]: %(message)s'))
+logging.getLogger().addHandler(console_handler)
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -16,51 +35,6 @@ userpasswordcrm = config('USERPASSWORD', default = '')
 
 
 
-fields_and_types_Contacts = {
-    "id": "UUID PRIMARY KEY",
-    "name": "VARCHAR(255)",
-    "mobile_phone": "VARCHAR(20)",
-    "usr_employer_lookup_id": "UUID",
-    "usr_agency_lookup_id": "UUID",
-    "usr_employeemanager_ukraine_id": "UUID",
-    "usr_employee_manager_europe_id": "UUID",
-    "usr_scroll_lookup_id": "UUID"
-}
-
-fields_and_types_Account = {
-    "id": "UUID PRIMARY KEY",
-    "name": "VARCHAR(255)",
-    "phone": "VARCHAR(20)",
-    "usr_partner_type_id": "UUID",
-    "usr_agency_that_give_us_employer_id": "UUID"
-}
-
-fields_and_types_Employee = {
-    "id": "UUID PRIMARY KEY",
-    "name": "VARCHAR(255)",
-    "full_job_title": "UUID"
-
-}
-
-fields_and_types_Employee = {
-    "id": "UUID PRIMARY KEY",
-    "name": "VARCHAR(255)",
-    "full_job_title": "UUID"
-
-}
-
-
-
-fields_and_types_usr_scroll_list_info = {
-    "id": "UUID PRIMARY KEY",
-    "name": "VARCHAR(255)"
-}
-
-
-fields_and_types_usr_type_partner = {
-    "id": "UUID PRIMARY KEY",
-    "name": "VARCHAR(255)"
-}
 
 
 name_f= []
@@ -71,8 +45,6 @@ name_f.append(fields_and_types_usr_scroll_list_info)
 name_f.append(fields_and_types_usr_type_partner)
 # print(name_f)
 
-
-name_t = ['Contacts', 'Account', 'Employee', 'Profession', 'PartnerType']
 # print(name_t)
 
 
@@ -83,7 +55,7 @@ def connect_to_db():
         password=config('DBPASSWORD'),
         host=config('DBHOST')
     )
-    print("maybe it`s ok")
+    # print("maybe it`s ok")
     return conn
 
 
@@ -101,8 +73,7 @@ def create_table_db(table_name, fields_and_types):
     conn.commit()
     cursor.close()
     conn.close()
-    print("maybe it`s ok")
-
+    # print("maybe it`s ok")
 
 
 def auth_func():
@@ -123,26 +94,26 @@ def auth_func():
 
     if response.status_code == 200:
         # Опрацьовуйте відповідь, якщо код статусу 200 OK
-        print('Запит був успішним!')
+        logging.info('Запит був успішним!')
         # print("Resoult response")
         # print(response.json())
         with open('response.json', 'w') as json_file:
             json.dump(response.json(), json_file, indent=4)
-        print('File response.json is written')
-        print(('File cookies.json in progres...'))
+        logging.info('File response.json is written')
+        logging.info(('File cookies.json in progres...'))
         cookies = {cookie.name: cookie.value for cookie in response.cookies}
         with open('cookies.json', 'w') as cookies_file:
             json.dump(cookies, cookies_file, indent=4)
-        print('File cookies was written')
-        print("Printed cookies")
+        logging.info('File cookies was written')
+        # print("Printed cookies")
         # for cookie in cookies:
         #     print(f'Cookie: {cookie}={cookies[cookie]}')
 
-        print("IF YOU SEE THIS MESSAGE, ALL OK")
+        logging.info("IF YOU SEE THIS MESSAGE, ALL OK")
 
     else:
         # Обробка помилок, якщо статус не 200
-        print(f'Помилка {response.status_code}: {response.text}')
+        logging.info(f'Помилка {response.status_code}: {response.text}')
 
 
 #
@@ -151,12 +122,11 @@ def auth_func():
 def created_tables(name_table, name_fields):
     for i in range(0, len(name_table)):
         create_table_db(name_table[i], name_fields[i])
-        print(f'Table {name_table[i]} was records' )
-    print('All info was created')
+        logging.info(f'Table {name_table[i]} was records' )
+    logging.info('All info was created')
 #
 # AFTER ALL TESTS IMPORTED THIS FUNC TO MAIN FUNC
 # created_tables(name_t, name_f)
-
 
 
 def record_to_db(name_url):
@@ -169,57 +139,37 @@ def record_to_db(name_url):
         response = requests.get(url, cookies=cookies, verify=False)
         return response.json()
     except Exception as e:
-        print(f'An error occurred: {str(e)}')
+        logging.error(f"Помилка: {str(e)}")
+
         return None
 
 
-# auth_func()
+def write_data_to_table(data, table_name):
 
-def write_to_current_tableDB(table_name):
-    elm_mass = record_to_db(config('URLCONTACT'))['value']
-    res_mass = []
-    for i in elm_mass:
-        print("Element")
-        prom_mass = []
-        mass = list(i)
 
-        for k in mass:
-            # print(i[k])
-
-            prom_mass.append(i[k])
-            # print(prom_mass)
-        res_mass.append(prom_mass)
-    # print(res_mass)
     conn = connect_to_db()
     cursor = conn.cursor()
 
-    for item in res_mass:
-        id_to_check = item[0]  # Отримайте ідентифікатор для перевірки
+    for item in data:
+        # Отримайте id для перевірки наявності запису
+        id_to_check = item.get('Id')
+
+        # Перевірте, чи існує запис з таким id в таблиці
         cursor.execute(f"SELECT id FROM {table_name} WHERE id = %s", (id_to_check,))
         existing_record = cursor.fetchone()
 
         if existing_record:
             # Запис із цим ідентифікатором вже існує, оновлюємо його
-            update_query = f'''
-                UPDATE {table_name} SET
-                    name = %s,
-                    mobile_phone = %s,
-                    usr_employer_lookup_id = %s,
-                    usr_agency_lookup_id = %s,
-                    usr_employeemanager_ukraine_id = %s,
-                    usr_employee_manager_europe_id = %s,
-                    usr_scroll_lookup_id = %s
-                WHERE id = %s
-            '''
-            cursor.execute(update_query, (item[1], item[2], item[3], item[4], item[5], item[6], item[7], id_to_check))
+            update_query = f"UPDATE {table_name} SET ({', '.join(item.keys())}) = ({', '.join(['%s'] * len(item))}) WHERE id = %s"
+            values_to_update = tuple(item.values()) + (id_to_check,)
+            cursor.execute(update_query, values_to_update)
         else:
             # Запис із цим ідентифікатором не існує, створюємо новий запис
-            insert_query = f'''
-                INSERT INTO {table_name} (
-                    id, name, mobile_phone, usr_employer_lookup_id, usr_agency_lookup_id, usr_employeemanager_ukraine_id, usr_employee_manager_europe_id, usr_scroll_lookup_id
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            '''
-            cursor.execute(insert_query, item)
+            keys = ', '.join(item.keys())
+            values = ', '.join(['%s'] * len(item))
+            insert_query = f"INSERT INTO {table_name} ({keys}) VALUES ({values})"
+            values_to_insert = tuple(item.values())
+            cursor.execute(insert_query, values_to_insert)
 
     # Збереження змін у базі даних
     conn.commit()
@@ -229,56 +179,81 @@ def write_to_current_tableDB(table_name):
     conn.close()
 
 
-# write_to_current_tableDB('Contacts')
+def full_write_data(ntable, nurl):
+    for i in range(0, len(nurl)):
 
+        start_time = time.time()
+        data_to_insert = record_to_db(nurl[i])['value']
+        # print(f'{ntable[i]}______{data_to_insert}')
+        # print('_________________________________________')
+        write_data_to_table(data_to_insert, ntable[i])
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logging.info(f"Час виконання: {execution_time} секунд")
+
+
+def size_db():
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    query = "SELECT pg_size_pretty(pg_database_size(current_database()));"
+    cursor.execute(query)
+
+    # Отримання результату запиту
+    db_size = cursor.fetchone()[0]
+
+    # Закриття курсора і з'єднання з базою даних
+    cursor.close()
+    conn.close()
+    logging.info(f"Розмір бази даних: {db_size}")
+
+
+#
+# CODE WHAT UNDER THIS COMMENTS ARE READY TO UNCOMMENTED
+#
 while True:
     print(" Input 1. Записати куки для авторизації серверу на Creatio")
     print(" Input 2. Створити необхідні для заповнення таблиці в бд")
     print(" Input 3. Записати в таблиці дані з CRM")
-    print(" Input 4. Exit")
-
+    print(" Input 4. Вивести розмір БД")
+    print(" Input 5. Exit")
     choice = input("Що ви хочете зробити?")
     if choice == '1':
+        start_time = time.time()
         auth_func()
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logging.info(f"Час виконання: {execution_time} секунд")
+
     elif choice == '2':
+        start_time = time.time()
         created_tables(name_t, name_f)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logging.info(f"Час виконання: {execution_time} секунд")
+
     elif choice == '3':
-        write_to_current_tableDB('Contacts')
+        start_time = time.time()
+        full_write_data(name_t, name_url)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logging.info(f"Час виконання: {execution_time} секунд")
+
     elif choice == '4':
-        print("Дякую за використання програми. Вихід.")
+        start_time = time.time()
+        size_db()
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logging.info(f"Час виконання: {execution_time} секунд")
+
+    elif choice == '5':
+        start_time = time.time()
+        logging.info("Дякую за використання програми. Вихід.")
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logging.info(f"Час виконання: {execution_time} секунд")
+
         break
     else:
         print("Ви ввели невірний вибір. Будь ласка, виберіть 1, 2 або 3.")
 
 
-
-
-# print(record_to_db()['value'])
-
-#
-# # print(res_mass)
-#
-# def write_to_current_tableDB(table_name):
-#
-#
-#     insert_query = f'''
-#         INSERT INTO {table_name} (
-#             id, name, mobile_phone, usr_employer_lookup_id, usr_agency_lookup_id, usr_employeemanager_ukraine_id, usr_employee_manager_europe_id, usr_scroll_lookup_id
-#         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-#         '''
-#     conn = connect_to_db()
-#     cursor = conn.cursor()
-#
-#     for item in res_mass:
-#         cursor.execute(insert_query, item)
-#
-#     # Збереження змін у базі даних
-#     conn.commit()
-#
-#     # Закриття підключення до бази даних
-#     cursor.close()
-#     conn.close()
-#
-# write_to_current_tableDB("contacts_info")
-#
-#
