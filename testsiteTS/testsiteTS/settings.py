@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crm_app',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +56,7 @@ ROOT_URLCONF = 'testsiteTS.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'crm_app/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -91,8 +93,27 @@ DATABASES = {
         'USER': 'admin',
         'PASSWORD': 'admin',
 
+    },
+    'db_from_crm': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':  'test_from_crm',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'TEST': {
+            'NAME': 'test_from_crm',
+        },
+        'OPTIONS': {
+            'options': '-c search_path=public',
+        },
+        'app_label': 'crm_app',  # Вказати назву вашої програми
     }
 }
+
+DATABASE_ROUTERS = [
+
+    'crm_app.database_router.DatabaseRouter',
+]
+
 
 
 # Password validation

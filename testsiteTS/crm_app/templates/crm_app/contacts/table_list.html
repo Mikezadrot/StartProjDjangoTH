@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список таблиць</title>
+</head>
+<body>
+    <h1>Список таблиць у вашій базі даних({{db_name}}):</h1>
+    <ul>
+        {% for table_name in table_names %}
+            <li>{{ table_name }}</li>
+
+        {% endfor %}
+
+            {% for table, data in table_data.items %}
+                <h2>Вміст таблиці: {{table_name}}</h2>
+                <h3>{{ table }}</h3>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            {% for field_name in data.0 %}
+                                <th>{{ field_name }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                            <tr>
+                                {% for value in row %}
+                                    <td>{{ value }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
+    </ul>
+</body>
+</html>

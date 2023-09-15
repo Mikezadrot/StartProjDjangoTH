@@ -1,0 +1,54 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>База даних: {{ db_name }}</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <h1>База даних: {{ db_name }}</h1>-->
+
+<!--    <h2>Список таблиць:</h2>-->
+<!--    <ul>-->
+<!--        {% for table in table_names %}-->
+<!--            <li>{{ table }}</li>-->
+<!--        {% endfor %}-->
+<!--    </ul>-->
+
+<!--    <h2>Вміст таблиць:</h2>-->
+<!--    {% for table, data in table_data.items %}-->
+<!--        <h3>{{ table }}</h3>-->
+<!--        <table border="1">-->
+<!--            <thead>-->
+<!--                <tr>-->
+<!--                    <th>ID</th>-->
+<!--                    <th>Count(Name)</th>-->
+<!--                    &lt;!&ndash; Додайте інші заголовки для інших полів за необхідності &ndash;&gt;-->
+<!--                </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--                {% for row in data %}-->
+<!--                    <tr>-->
+<!--                        <td>{{ row.0 }}</td>-->
+<!--                        <td>{{ row.1 }}</td>-->
+<!--                        &lt;!&ndash; Додайте інші комірки для інших полів за необхідності &ndash;&gt;-->
+<!--                    </tr>-->
+<!--                {% endfor %}-->
+<!--            </tbody>-->
+<!--        </table>-->
+<!--    {% endfor %}-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+    {{acc}}
+    {% for i in acc %}
+        {{ i.phone }}
+    {% endfor %}
+
+
+</body>
+</html>
