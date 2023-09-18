@@ -97,7 +97,7 @@ class Contacts(models.Model):
 
 
 class Tested(models.Model):
-    # id = models.IntegerField(primary_key=True, unique=True)
+    id = models.IntegerField(primary_key=True, unique=True)
     uuid_id = models.UUIDField(blank=True, null=True)
     name_cont = models.CharField(max_length=255)
     phone_cont = models.CharField(max_length=255)
@@ -112,10 +112,14 @@ class Tested(models.Model):
     def transfer(cls):
         contacts = Contacts.objects.all()
         new_obj = []
-        for contact in contacts:
-            new_tested = cls(uuid_id=contact.id, name_cont=contact.name, phone_cont=contact.mobilephone)
 
-            new_obj.append(new_tested)
+        existing_uuid_ids = cls.objects.values_list('uuid_id', flat=True)
+
+        for contact in contacts:
+            if contact.id not in existing_uuid_ids:
+                new_tested = cls(uuid_id=contact.id, name_cont=contact.name, phone_cont=contact.mobilephone)
+
+                new_obj.append(new_tested)
 
         cls.objects.bulk_create(new_obj)
 
