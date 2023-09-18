@@ -1,0 +1,9 @@
+This script created for writing from 1 to 2 models information . In decorators i can write anything stupid thing and what i want to do whit my custom model
+
+
+script to terminal>>>
+python manage.py shell>>>
+
+
+from testapp.models import Tested
+Tested.transfer()

@@ -1,0 +1,17 @@
+<!-- HTML шаблон (leads.html) -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список tested</title>
+</head>
+<body>
+    <h1>Список tested</h1>
+    <ul>
+
+        {{data}}
+        {% for c in data %}
+            <li>{{ c.id}}________{{c.uuid_id}}______{{c.name_cont}}______{{c.phone_cont}}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

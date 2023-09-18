@@ -1,0 +1,15 @@
+<!-- HTML шаблон (leads.html) -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список контактів</title>
+</head>
+<body>
+    <h1>Список контактів</h1>
+    <ul>Name worker _________ Name support
+        {% for c in contact %}
+            <li>{{ c.name}}________{{c.id}}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
