@@ -1,11 +1,11 @@
 from django.shortcuts import render
 
-from .models import Contacts, Tested
+from .models import Contacts, Tested, Worker
 
 
 def worker_view(request):
     # Отримати дані з моделі
-    cont = Contacts.objects.all()
+    cont = Worker.objects.all()
     context = {'contact': cont}
     # print(context)
     # Передати дані в шаблон та відобразити їх

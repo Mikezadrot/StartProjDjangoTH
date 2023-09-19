@@ -6,9 +6,10 @@
 </head>
 <body>
     <h1>Список контактів</h1>
+    <p>{{contact}}</p>
     <ul>Name worker _________ Name support
         {% for c in contact %}
-            <li>{{ c.name}}________{{c.id}}</li>
+            <li>Name:{{ c.name}};  Phone: {{c.mobilephone}}; Id_emp: {{c.uuid_employer}}; ID_agency:{{c.uuid_agency}}</li>
         {% endfor %}
     </ul>
 </body>
